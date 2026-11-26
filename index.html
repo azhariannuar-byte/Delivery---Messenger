@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123b35">
+<meta name="description" content="A simple bilingual delivery message helper for WhatsApp and SMS.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Delivery Messenger</title>
+<style>
+:root{--green:#0e6b50;--green2:#16865f;--ink:#172a26;--muted:#65736f;--bg:#f3f6f4;--card:#fff;--line:#dfe8e3;--soft:#eaf4ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:linear-gradient(135deg,#103e35,#12694f);color:#fff;padding:22px 18px 25px;border-radius:0 0 24px 24px}
+.head{max-width:680px;margin:auto}header .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}h1{font-size:25px;margin:5px 0 2px}header p{margin:0;color:#d5e9e1;font-size:14px}
+main{max-width:680px;margin:16px auto;padding:0 14px 32px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:13px;box-shadow:0 3px 12px #173b2b08}
+h2{font-size:16px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:13px;font-weight:650;margin:0 0 6px;color:#40514b}
+input,select,textarea{width:100%;border:1px solid #cfdbd5;border-radius:11px;background:#fff;padding:12px;font:inherit;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green2);box-shadow:0 0 0 3px #16865f1b}
+textarea{min-height:210px;resize:vertical;line-height:1.5}
+.field{margin-bottom:12px}.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:#fff;color:#40514b;font-size:13px;font-weight:650;cursor:pointer}.pill.active{background:var(--soft);border-color:#8dbba7;color:#0b6549}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+button{border:0;border-radius:12px;padding:13px 14px;font:700 15px system-ui;cursor:pointer}
+.primary{background:var(--green);color:#fff}.secondary{background:#eaf1ed;color:#15513f}
+button:active{transform:scale(.99)}.note{font-size:12px;color:var(--muted);line-height:1.5}
+.status{font-size:13px;color:var(--green);min-height:18px;margin-top:8px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:4px 10px 20px}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="head"><div class="eyebrow">Simple delivery communication</div><h1>Delivery Messenger</h1><p>Prepare a message, then open WhatsApp or SMS to send it yourself.</p></div></header>
+<main>
+<section class="card">
+<h2>1. Recipient</h2>
+<div class="grid">
+ <div class="field"><label for="dial">Country code</label><select id="dial"><option value="60" selected>Malaysia (+60)</option><option value="65">Singapore (+65)</option><option value="62">Indonesia (+62)</option><option value="66">Thailand (+66)</option><option value="91">India (+91)</option><option value="1">USA / Canada (+1)</option><option value="44">UK (+44)</option></select></div>
+ <div class="field"><label for="phone">Phone number</label><input id="phone" inputmode="tel" autocomplete="tel-national" placeholder="e.g. 0123456789"></div>
+</div>
+<div class="hint">Enter the number without spaces if possible. For Malaysian numbers, you can enter 012… or 12…</div>
+</section>
+
+<section class="card">
+<h2>2. Delivery details</h2>
+<div class="grid">
+ <div class="field"><label for="platform">Delivery platform</label><select id="platform"><option>uParcel</option><option>Ninja Van</option><option>Lalamove</option><option>GrabExpress</option><option>Other delivery</option></select></div>
+ <div class="field"><label for="merchant">Merchant / sender</label><input id="merchant" value="Konica Minolta" placeholder="e.g. Konica Minolta"></div>
+</div>
+<div class="field"><label>Message language</label><div class="pills" role="group" aria-label="Message language"><button class="pill active" data-lang="both">English + BM</button><button class="pill" data-lang="en">English</button><button class="pill" data-lang="bm">Bahasa Malaysia</button></div></div>
+</section>
+
+<section class="card">
+<h2>3. Choose a message</h2>
+<div class="field"><label for="template">Message type</label><select id="template">
+<option value="onway">Parcel on the way</option>
+<option value="soon">Arriving soon</option>
+<option value="noanswer">Could not reach you</option>
+<option value="arrived">Driver has arrived</option>
+<option value="delivered">Parcel delivered</option>
+<option value="custom">Custom message</option>
+</select></div>
+<div class="field"><label for="message">Message preview (editable)</label><textarea id="message" spellcheck="true"></textarea></div>
+<div class="actions">
+<button class="primary" id="wa">Open WhatsApp</button>
+<button class="secondary" id="sms">Open SMS</button>
+</div>
+<div class="status" id="status" aria-live="polite"></div>
+</section>
+<section class="card">
+<h2>Privacy and sending</h2>
+<p class="note">This app does not send messages automatically, access your contacts, or store recipient numbers. It prepares the message and opens WhatsApp or your SMS app. You review the recipient and press Send yourself. Contact customers only where permitted by your delivery platform and the recipient's communication preferences. Repeated unsolicited messages can still lead to spam reports or account restrictions.</p>
+</section>
+<footer>Delivery Messenger · No ads · No account · No automatic sending</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let lang='both';
+const templates={
+ onway:{
+ en:m=>`Salam / Hi!\n\nI'm your delivery driver for ${$('platform').value}. I have a parcel from ${m} coming your way.\n\nPlease get ready to receive the parcel. See you soon. Thank you!`,
+ bm:m=>`Salam / Hai!\n\nSaya pemandu penghantaran ${$('platform').value} anda. Saya mempunyai bungkusan daripada ${m} untuk dihantar kepada anda.\n\nSila bersedia untuk menerima bungkusan. Jumpa sebentar lagi. Terima kasih!`
+ },
+ soon:{
+ en:m=>`Salam / Hi!\n\nI'm your ${$('platform').value} delivery driver. I should arrive with your parcel from ${m} shortly. Please be ready to receive it. Thank you!`,
+ bm:m=>`Salam / Hai!\n\nSaya pemandu penghantaran ${$('platform').value} anda. Saya akan tiba dengan bungkusan daripada ${m} sebentar lagi. Sila bersedia untuk menerimanya. Terima kasih!`
+ },
+ noanswer:{
+ en:m=>`Salam / Hi!\n\nI'm your ${$('platform').value} delivery driver. I tried calling about your parcel from ${m}, but couldn't reach you. Please let me know when you're available to receive it. Thank you.`,
+ bm:m=>`Salam / Hai!\n\nSaya pemandu penghantaran ${$('platform').value} anda. Saya telah cuba menghubungi anda berkenaan bungkusan daripada ${m}, tetapi tidak berjaya. Sila maklumkan apabila anda boleh menerima bungkusan. Terima kasih.`
+ },
+ arrived:{
+ en:m=>`Salam / Hi!\n\nI'm your ${$('platform').value} delivery driver. I've arrived at the delivery location with your parcel from ${m}. Please come and receive it. Thank you.`,
+ bm:m=>`Salam / Hai!\n\nSaya pemandu penghantaran ${$('platform').value} anda. Saya telah tiba di lokasi penghantaran dengan bungkusan daripada ${m}. Sila datang untuk menerimanya. Terima kasih.`
+ },
+ delivered:{
+ en:m=>`Salam / Hi!\n\nYour parcel from ${m} has been delivered. Thank you, and have a good day!`,
+ bm:m=>`Salam / Hai!\n\nBungkusan daripada ${m} telah berjaya dihantar. Terima kasih dan semoga hari anda baik!`
+ }
+};
+function render(){
+ const type=$('template').value, merchant=$('merchant').value.trim()||'the sender';
+ if(type==='custom') return;
+ const t=templates[type];
+ $('message').value=lang==='en'?t.en(merchant):lang==='bm'?t.bm(merchant):t.en(merchant)+'\n\n——————————\n\n'+t.bm(merchant);
+}
+function number(){
+ let raw=$('phone').value.replace(/[^\d]/g,'');
+ const dial=$('dial').value;
+ if(!raw) return '';
+ if(dial==='60' && raw.startsWith('0')) raw=raw.slice(1);
+ if(raw.startsWith(dial)) return raw;
+ return dial+raw;
+}
+function validate(){
+ const n=number();
+ if(!n || n.length<8){$('status').textContent='Enter a valid phone number first.';return null;}
+ if(!$('message').value.trim()){$('status').textContent='Enter a message first.';return null;}
+ return n;
+}
+$('template').addEventListener('change',render);
+$('merchant').addEventListener('input',()=>{if($('template').value!=='custom')render()});
+$('platform').addEventListener('change',()=>{if($('template').value!=='custom')render()});
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{lang=b.dataset.lang;document.querySelectorAll('[data-lang]').forEach(x=>x.classList.toggle('active',x===b));render()}));
+$('wa').addEventListener('click',()=>{const n=validate();if(!n)return;const url=`https://wa.me/${n}?text=${encodeURIComponent($('message').value)}`;window.open(url,'_blank','noopener');$('status').textContent='WhatsApp opened. Check the number and message, then press Send.'});
+$('sms').addEventListener('click',()=>{const n=validate();if(!n)return;const body=encodeURIComponent($('message').value);window.location.href=`sms:${n}?body=${body}`;$('status').textContent='Your SMS app should open. Review the message before sending.'});
+render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
