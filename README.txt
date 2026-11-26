@@ -1,18 +1,24 @@
-DELIVERY MESSENGER — ANDROID PWA
+DELIVERY MESSENGER 2.0
+Upload all seven files in this folder to the ROOT of the existing GitHub Pages repository, replacing index.html, manifest.webmanifest and sw.js:
+- index.html
+- manifest.webmanifest
+- sw.js
+- icon-192.png
+- icon-512.png
+- icon-maskable-512.png
+- README.txt (optional)
 
-Files:
-- index.html: app
-- manifest.webmanifest: install metadata
-- sw.js: offline cache
+PWA notes:
+- HTTPS is required; GitHub Pages provides it.
+- Chrome on Android should offer Install app when manifest, icons and service worker are available.
+- If Chrome still only offers Create shortcut, use that; the app remains usable.
+- After deployment, close the app and reopen. If old assets remain cached, close Chrome tabs for the site and reload; service worker cache version is v2.
 
-The app is a static web app. It does not connect to uParcel, Ninja Van, Lalamove or any courier API.
-It prepares a message and opens WhatsApp (wa.me) or the phone's SMS app. The user must review and send.
+Local storage:
+- Platform, merchant, language and saved custom message templates are stored in localStorage on that device/browser.
+- Recipient phone numbers are not stored.
+- Clearing browser site data removes these preferences.
 
-TO USE ON A SAMSUNG PHONE:
-1. Host these files on an HTTPS static host (for example, GitHub Pages).
-2. Open the hosted URL in Chrome on your Samsung.
-3. Chrome menu (⋮) > Add to Home screen / Install app.
-4. Launch Delivery Messenger from the home screen.
-
-No recipient phone numbers are saved by the app. No contacts permission or account is required.
-WhatsApp may still apply its own anti-spam restrictions. Use customer contact details only in accordance with platform rules and recipient preferences.
+Messaging:
+- WhatsApp and SMS are opened with a prefilled message. User reviews and sends manually.
+- No integration with courier platform APIs and no automated sending.
